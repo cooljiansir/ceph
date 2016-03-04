@@ -3060,11 +3060,14 @@ int RGWRados::get_max_chunk_size(rgw_bucket& bucket, uint64_t *max_chunk_size)
 void RGWRados::finalize()
 {
   if (run_sync_thread) {
+    ldout(cct, 10) << "finalize stopping meta sync processor thread..." << dendl;
     Mutex::Locker l(meta_sync_thread_lock);
     meta_sync_processor_thread->stop();
     delete meta_sync_processor_thread;
     meta_sync_processor_thread = NULL;
+    ldout(cct, 10) << "finalize stopped meta sync processor thread" << dendl;
 
+    ldout(cct, 10) << "finalize stopping data sync processor threads..." << dendl;
     Mutex::Locker dl(data_sync_thread_lock);
     map<string, RGWDataSyncProcessorThread *>::iterator iter = data_sync_processor_threads.begin();
     for (; iter != data_sync_processor_threads.end(); ++iter) {
@@ -3073,6 +3076,7 @@ void RGWRados::finalize()
       delete thread;
     }
     data_sync_processor_threads.clear();
+    ldout(cct, 10) << "finalize stopped data sync processor threads" << dendl;
   }
   if (finisher) {
     finisher->stop();
@@ -3088,18 +3092,24 @@ void RGWRados::finalize()
     delete finisher;
   }
   if (meta_notifier) {
+    ldout(cct, 10) << "finalize stopping meta sync notifier thread..." << dendl;
     meta_notifier->stop();
     delete meta_notifier;
+    ldout(cct, 10) << "finalize stopped meta sync notifier thread" << dendl;
   }
   if (data_notifier) {
+    ldout(cct, 10) << "finalize stopping data sync notifier thread..." << dendl;
     data_notifier->stop();
     delete data_notifier;
+    ldout(cct, 10) << "finalize stopped data sync notifier thread" << dendl;
   }
   delete meta_mgr;
   delete data_log;
   if (async_rados) {
+    ldout(cct, 10) << "finalize stopping async rados threads..." << dendl;
     async_rados->stop();
     delete async_rados;
+    ldout(cct, 10) << "finalize stopped async rados threads" << dendl;
   }
   if (use_gc_thread) {
     gc->stop_processor();

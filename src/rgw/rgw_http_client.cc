@@ -148,6 +148,9 @@ struct rgw_http_req_data : public RefCountedObject {
                         mgr(NULL), lock("rgw_http_req_data::lock") {
     memset(error_buf, 0, sizeof(error_buf));
   }
+  ~rgw_http_req_data() {
+    dout(10) << "~rgw_http_req_data() on " << this << dendl;
+  }
 
   int wait() {
     Mutex::Locker l(lock);
@@ -156,6 +159,7 @@ struct rgw_http_req_data : public RefCountedObject {
   }
 
   void finish(int r) {
+    dout(10) << "rgw_http_req_data::finish(" << r << ") on " << this << dendl;
     Mutex::Locker l(lock);
     ret = r;
     cond.Signal();
