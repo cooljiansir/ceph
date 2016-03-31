@@ -2776,6 +2776,13 @@ int main(int argc, char **argv)
             cerr << "could not fetch period " << current_period << std::endl;
             return -ret;
           }
+          // update local objects to reflect the period's zones/zonegroups
+          ret = period.reflect();
+          if (ret < 0) {
+            cerr << "could not update local zones from period "
+                << current_period << std::endl;
+            return -ret;
+          }
         }
         ret = realm.create(false);
         if (ret < 0 && ret != -EEXIST) {
