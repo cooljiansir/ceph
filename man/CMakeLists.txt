@@ -41,6 +41,7 @@ endif()
 
 foreach(manpage ${manpage_srcs})
   string(REGEX MATCH "^[0-9]/" section ${manpage})
+  string(REPLACE "/" "" section ${section})
   get_filename_component(cmd ${manpage} NAME_WE)
   list(APPEND sphinx_input ${CMAKE_SOURCE_DIR}/doc/man/${manpage})
   list(APPEND sphinx_output ${CMAKE_BINARY_DIR}/doc/man/${cmd}.${section})
