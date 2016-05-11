@@ -373,4 +373,6 @@ add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
 add_subdirectory(src)
 
 # man pages must be preprocessed, not supported yet
-add_subdirectory(man)
+if(WITH_MANPAGE)
+  add_subdirectory(man)
+endif(WITH_MANPAGE)
