@@ -1,4 +1,4 @@
-set(manpages_srcs
+set(manpage_srcs
   8/ceph-osd.rst
   8/ceph-mds.rst
   8/ceph-mon.rst
