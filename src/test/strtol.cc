@@ -211,7 +211,7 @@ TEST(SIStrToLL, Error) {
   test_strict_sistrtoll_err("0m");
   test_strict_sistrtoll_err("-1"); // it returns uint64_t
   test_strict_sistrtoll_err("-1K");
-  // the upper bound of uint64_t is 2^64 = 4E, so 1024E overflows
+  // the upper bound of uint64_t is 2^64 = 16E, so 1024E overflows
   test_strict_sistrtoll_err("1024E"); // overflows after adding the suffix
 }
 
@@ -233,6 +233,43 @@ TEST(StrictSICast, Error) {
     std::string err;
     (void)strict_si_cast<int>("1T", &err);
     ASSERT_NE(err, "");
+  }
+}
+
+// some extra tests to enable the template for int64_t
+TEST(StrictSICast, Int64) {
+  const auto int64_min = std::numeric_limits<int64_t>::min();
+  const auto int64_max = std::numeric_limits<int64_t>::max();
+
+  std::string ignored;
+  ASSERT_EQ(1, strict_si_cast<int64_t>("1", &ignored));
+  ASSERT_EQ(0, strict_si_cast<int64_t>("0", &ignored));
+  ASSERT_EQ(-1, strict_si_cast<int64_t>("-1", &ignored));
+  ASSERT_EQ(1048576, strict_si_cast<int64_t>("1M", &ignored));
+  ASSERT_EQ(-1048576, strict_si_cast<int64_t>("-1M", &ignored));
+  ASSERT_EQ(8589934592, strict_si_cast<int64_t>("8G", &ignored));
+  ASSERT_EQ(-8589934592, strict_si_cast<int64_t>("-8G", &ignored));
+  ASSERT_EQ(8070450532247928832, strict_si_cast<int64_t>("7E", &ignored));
+  ASSERT_EQ(-8070450532247928832, strict_si_cast<int64_t>("-7E", &ignored));
+  // std::numeric_limits<int64_t>::min() = -9223372036854775808 = -8E
+  ASSERT_EQ(int64_min, strict_si_cast<int64_t>("-9223372036854775808", &ignored));
+  ASSERT_EQ(int64_min, strict_si_cast<int64_t>("-8E", &ignored));
+  {
+    std::string err;
+    ASSERT_EQ(0, strict_si_cast<int64_t>("-9223372036854775809", &err)); // min - 1
+    ASSERT_FALSE(err.empty());
+  }
+  // std::numeric_limits<int64_t>::max() = 9223372036854775807
+  ASSERT_EQ(int64_max, strict_si_cast<int64_t>("9223372036854775807", &ignored));
+  {
+    std::string err;
+    ASSERT_EQ(0, strict_si_cast<int64_t>("9223372036854775808", &err)); // max + 1
+    ASSERT_FALSE(err.empty());
+  }
+  {
+    std::string err;
+    ASSERT_EQ(0, strict_si_cast<int64_t>("8E", &err)); // max + 1
+    ASSERT_FALSE(err.empty());
   }
 }
 
