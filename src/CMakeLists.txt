@@ -1409,6 +1409,7 @@ if(${WITH_RADOSGW})
     cls_replica_log_client cls_user_client curl global expat)
 
   set(radosgw_srcs
+    rgw/rgw_asio_frontend.cc
     rgw/rgw_fcgi_process.cc
     rgw/rgw_loadgen_process.cc
     rgw/rgw_civetweb.cc
